@@ -1,15 +1,17 @@
-import posts from "./tuits.js";
-let tuits = posts;
+// import posts from "./tuits.js";
+// let tuits = posts;
+import * as tuitsDao from './tuits-dao.js';
 
-const createTuit = (req, res) => {
+// now it's asynchronous function
+const createTuit = async (req, res) => {
   const newData = req.body;
-  newData._id = (new Date()).getTime() + '';
+  // newData._id = (new Date()).getTime() + '';
   newData.avatarIcon = "nasa-logo.jpg";
   newData.userName = "NASA";
   newData.handle = "NASA";
   newData.time = "0s";
   newData.topic = "Trending";
-  newData.title = "";
+  newData.title = "News from NASA";
   newData.replies = 0;
   newData.retuits = 0;
   newData.likes = 0;
@@ -17,25 +19,32 @@ const createTuit = (req, res) => {
   newData.dislikes = 0;
   newData.disliked = false;
   // tuits.push(newData);
-  tuits.unshift(newData);
-  res.json(newData);
+  // tuits.unshift(newData);
+  const insertedTuit = await tuitsDao.createTuit(newData);
+  res.json(insertedTuit);
 }
 
-const findTuits = (req, res) => {
+// now it's asynchronous function
+const findTuits = async (req, res) => {
+  const tuits = await tuitsDao.findTuits();
   res.json(tuits);
 }
 
-const updateTuit = (req, res) => {
+const updateTuit = async (req, res) => {
   const tId = req.params['tid'];
   const updates = req.body;
-  tuits = tuits.map((t) => t._id === tId ? {...t, ...updates} : t);
-  res.sendStatus(200);
+  // tuits = tuits.map((t) => t._id === tId ? {...t, ...updates} : t);
+  const status = await tuitsDao.updateTuit(tId, updates);
+  // res.sendStatus(200);
+  res.json(status);
 }
 
-const deleteTuit = (req, res) => {
+const deleteTuit = async (req, res) => {
   const tId = req.params['tid'];
-  tuits = tuits.filter(t => t._id !== tId);
-  res.sendStatus(200);
+  // tuits = tuits.filter(t => t._id !== tId);
+  const status = await tuitsDao.deleteTuit(tId);
+  // res.sendStatus(200);
+  res.json(status);
 }
 
 export default (app) => {
